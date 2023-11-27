@@ -1,0 +1,58 @@
+version: '3'
+services:
+
+
+  nexus:
+    image: sonatype/nexus3:latest
+    container_name: nexus_container3
+    ports:
+       - "8082:8082"
+    networks:
+      - app-network
+
+  sonarqube:
+      image: sonarqube:latest
+      container_name: sonarqube_container3
+      ports:
+         - "9093:9093"
+      networks:
+        - app-network
+
+  mysql:
+    image: mysql:latest
+    container_name:  mysql_container3
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD:
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+      MYSQL_DATABASE: devops
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - mysql_config:/etc/mysql/conf.d
+    networks:
+      - app-network
+
+  spring-app:
+    image: firasyazid12/devops_project_firas:test
+    container_name: devosapp3
+    ports:
+      - "8085:8085"
+    depends_on:
+      - mysql
+    networks:
+      - app-network
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/devops
+
+
+
+
+
+
+volumes:
+  mysql_data:
+  mysql_config:
+networks:
+  app-network:
+    driver: bridge
